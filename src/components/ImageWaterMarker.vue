@@ -3,56 +3,86 @@
     <!-- <Button @click="handleFileInput" label="Select Folder" /> -->
     <div class="grid grid-nogutter surface-section text-800">
       <div
-        class="col-12 md:col-6 p-6 text-center md:text-left flex align-items-center"
+        class="col-12 md:col-6 px-6 text-center md:text-left flex align-items-center"
       >
         <section>
           <span class="block text-6xl font-bold mb-1"> Watermark Adder </span>
           <div class="text-6xl text-primary font-bold mb-3">
             Add Watermark on your image
           </div>
-          <p class="mt-0 mb-4 text-700 line-height-3">
-            Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do
-            eiusmod tempor incididunt ut labore et dolore magna aliqua.
-          </p>
-
-          <Button
-            label="Learn More"
-            type="button"
-            class="mr-3 p-button-raised"
-          />
-          <Button label="Live Demo" type="button" class="p-button-outlined" />
         </section>
       </div>
-      <div class="col-12 md:col-6 overflow-hidden">
-        <img
-          src="images/blocks/hero/hero-1.png"
-          alt="Image"
-          class="md:ml-auto block md:h-full"
-          style="clip-path: polygon(8% 0, 100% 0%, 100% 100%, 0 100%)"
-        />
+    </div>
+
+    <div class="grid">
+      <div
+        class="col-12 md:col-4 px-6 text-center md:text-left flex align-items-center"
+      >
+        <div>
+          <WatermarkImageUpload
+            class="w-full"
+            title="Upload Markdown Image"
+            @onImageSelect="watermarkImageUploadHandler"
+            :watermarkedImage="imageToWaterMark"
+          />
+          <WatermarkImageUpload
+            title="Upload Image To add Markdown"
+            :multiple="true"
+            @onImageSelect="ImageUploadHandler"
+            class="mt-2"
+          />
+        </div>
+      </div>
+      <div
+        class="col-12 md:col-4 px-6 text-center md:text-left flex align-items-center"
+      ></div>
+      <div class="col-12 md:col-4 px-6 text-center md:text-left">
+        <PreviewImage :file="ImageForPreview" />
       </div>
     </div>
   </div>
 </template>
 
 <script setup lang="ts">
-import { ref } from "vue";
+import { nextTick, ref } from "vue";
 import watermark from "watermarkjs";
-import Button from "primevue/button";
+import { useToast } from "primevue/usetoast";
+import WatermarkImageUpload from "./WatermarkImageUpload.vue";
+import PreviewImage from "./PreviewImage.vue";
+// hooks
+const toast = useToast();
 
 // states
-const files = ref(null);
-const output = ref(null);
+const imageToWaterMark = ref(null);
+const watermarkedImage = ref(null);
+const ImageForPreview = ref(null);
 
-const fileInputed = () => {
-  const imageFile = files.value.files[0];
+// methods
+const watermarkImageUploadHandler = (image) => {
+  watermarkedImage.value = image;
+};
+
+const ImageUploadHandler = (image) => {
+  console.log(image);
+  if (image?.length > 1) ImageForPreview.value = image[0];
+
+  imageToWaterMark.value = image;
+};
+
+const fileInputed = async (image) => {
+  const imageFile = image;
   const fileName = imageFile.name;
-
-  watermark([imageFile, "./img/softzino.png"])
+  watermark([imageFile, imageToWaterMark.value.objectURL])
     .image(watermark.image.lowerLeft(0.5))
     .then((image) => {
       downloadBlob(image.src, fileName);
     });
+
+  // watermark([imageFile, "./img/softzino.png"])
+  //   .image(watermark.image.lowerLeft(0.5))
+  //   .then((image) => {
+  //     downloadBlob(image.src, fileName);
+  //   });
 };
 
 const downloadBlob = (blobUrl, name = "file.png") => {
