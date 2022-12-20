@@ -28,31 +28,29 @@
       </template>
 
       <template #content="{ files }">
-        <div v-if="files.length > 0">
-          <!-- <div
-            v-for="file of files"
-            :key="file.name + file.type + file.size"
-            class="m-0 w-full"
+        <div
+          v-if="files.length === 1"
+          v-for="file of files"
+          :key="file.name + file.type + file.size"
+          class="m-0 w-full"
+        >
+          <div>
+            <img
+              :alt="file.name"
+              :src="file.objectURL"
+              class="w-full"
+              height="200"
+            />
+          </div>
+        </div>
+        <div v-if="files.length > 1">
+          <div
+            class="flex align-items-center justify-content-center flex-column"
           >
-            <div>
-              <img
-                :alt="file.name"
-                :src="file.objectURL"
-                class="w-full"
-                height="200"
-              />
-            </div>
-          </div> -->
-          <Galleria
-            :value="files"
-            :responsiveOptions="responsiveOptions"
-            :numVisible="5"
-            containerStyle="max-width: 640px"
-          >
-            <template #item="slotProps">
-              <img :src="slotProps.item.originalUrl" style="width: 100%" />
-            </template>
-          </Galleria>
+            <i class="pi pi-folder border-2 p-5 text-8xl text-400 border-0" />
+
+            <p class="mt-4 mb-0">{{ files.length }} file selected.</p>
+          </div>
         </div>
       </template>
 
@@ -72,7 +70,6 @@
 import { ref } from "vue";
 import FileUpload from "primevue/fileupload";
 import Button from "primevue/button";
-import Galleria from "primevue/galleria";
 
 // define props
 const props = defineProps<{
@@ -85,19 +82,19 @@ const emits = defineEmits<{
   (e: "onImageSelect", image: object): void;
 }>();
 
-const responsiveOptions: [
+const responsiveOptions = [
   {
-    breakpoint: "1024px";
-    numVisible: 5;
+    breakpoint: "1024px",
+    numVisible: 5,
   },
   {
-    breakpoint: "768px";
-    numVisible: 3;
+    breakpoint: "768px",
+    numVisible: 3,
   },
   {
-    breakpoint: "560px";
-    numVisible: 1;
-  }
+    breakpoint: "560px",
+    numVisible: 1,
+  },
 ];
 
 const onSelectedFiles = (event) => {

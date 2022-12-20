@@ -33,9 +33,13 @@
           />
         </div>
       </div>
-      <div
-        class="col-12 md:col-4 px-6 text-center md:text-left flex align-items-center"
-      ></div>
+      <div class="col-12 md:col-4 px-6 text-center md:text-left">
+        <WatermarkPosition @onPositionChange="positionChangeHandler" />
+        <WatermarkOpacity
+          class="mt-5"
+          @onOpacityChange="opacityChangeHandler"
+        />
+      </div>
       <div class="col-12 md:col-4 px-6 text-center md:text-left">
         <PreviewImage :file="ImageForPreview" />
       </div>
@@ -49,6 +53,9 @@ import watermark from "watermarkjs";
 import { useToast } from "primevue/usetoast";
 import WatermarkImageUpload from "./WatermarkImageUpload.vue";
 import PreviewImage from "./PreviewImage.vue";
+import WatermarkPosition from "./WatermarkPosition.vue";
+import WatermarkOpacity from "./WatermarkOpacity.vue";
+
 // hooks
 const toast = useToast();
 
@@ -56,10 +63,20 @@ const toast = useToast();
 const imageToWaterMark = ref(null);
 const watermarkedImage = ref(null);
 const ImageForPreview = ref(null);
+const position = ref("lowerLeft");
+const opacity = ref(50);
 
 // methods
 const watermarkImageUploadHandler = (image) => {
   watermarkedImage.value = image;
+};
+
+const positionChangeHandler = (selectedPosition) => {
+  position.value = selectedPosition;
+};
+
+const opacityChangeHandler = (value) => {
+  opacity.value = value;
 };
 
 const ImageUploadHandler = (image) => {
